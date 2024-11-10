@@ -3,18 +3,6 @@
 This script retrieves and exports the TODO list progress for a given employee
 using the JSONPlaceholder REST API into a JSON file.
 
-Takes the employee ID as input and creates a JSON file in the following format:
-
-{
-    "USER_ID": [
-        {"task": "TASK_TITLE", "completed": TASK_COMPLETED_STATUS, "username": "USERNAME"},
-        {"task": "TASK_TITLE", "completed": TASK_COMPLETED_STATUS, "username": "USERNAME"},
-        ...
-    ]
-}
-
-The file name will be the employee ID (USER_ID.json).
-
 Usage:
     python3 2-export_to_JSON.py <employee_id>
 
@@ -23,8 +11,16 @@ Arguments:
 
 Example:
     python3 2-export_to_JSON.py 2
-"""
 
+    The resulting file will be in the format:
+
+    {
+        "USER_ID": [
+            {"task": "TASK_TITLE", "completed": TASK_COMPLETED_STATUS, "username": "USERNAME"},
+            ...
+        ]
+    }
+"""
 import json
 import requests
 import sys
@@ -73,12 +69,4 @@ def get_todo_data(employee_id):
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 2-export_to_JSON.py <employee_id>")
-        sys.exit(1)
-
-    try:
-        employee_id = int(sys.argv[1])
-    except ValueError:
-        print("Error: Employee ID must be an integer.")
-        sys.exit(1)
-
-    get_todo_data(employee_id)
+    
