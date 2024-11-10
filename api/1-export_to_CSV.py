@@ -1,79 +1,75 @@
 #!/usr/bin/python3
-"""
-This script retrieves and exports the TODO list progress for a given employee
-using the JSONPlaceholder REST API into a CSV file.
+'''
+A script that uses a provided API to fetch an employee by
+their ID and returns the information found about their todo list progress in
+the CSV data format.
 
-Takes the employee ID as input and creates a CSV file in the following format:
-
-"USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"
-
-The file name will be the employee ID (USER_ID.csv).
-
-Usage:
-    python3 1-export_to_CSV.py <employee_id>
-
-Arguments:
-    employee_id (int): ID of Employee whose TODO list you want to export
-
-Example:
-    python3 1-export_to_CSV.py 2
-"""
+- Records all tasks owned by the given employee
+- Format: `"USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"`
+- Output filename: `USER_ID.csv`
+'''
 
 import csv
 import requests
-import sys
+from sys import argv
 
 
-def get_todo_data(employee_id):
-    """Fetch and export employee TODO list progress to CSV."""
-    # URLs to fetch employee and TODO data
-    user_url = (
-        f'https://jsonplaceholder.typicode.com/users/{employee_id}'
-    )
-    todos_url = (
-        f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
-    )
+def process_request():
+    '''
+    Takes an integer representing an employee ID from argv and writes the found
+    employee's todo list data in CSV format to a file.
+    ----
+    "USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"
+    ----
+    '''
+    # Check if employee ID is provided
+    if len(argv) < 2:
+        print("No employee ID provided")
+        return
 
-    # Fetch employee data
-    user_response = requests.get(user_url)
-    user_data = user_response.json()
-    employee_name = user_data.get('name')
+    # Retrieve the employee ID from command-line arguments
+    given_id = argv[1]
+    try:
+        given_id = int(given_id)  # Convert to integer
+    except ValueError:
+        print("Invalid employee ID provided")
+        return
 
-    # Fetch TODO tasks data
-    todos_response = requests.get(todos_url)
-    todos_data = todos_response.json()
+    # Fetch employee data using the API
+    employee_url = f"https://jsonplaceholder.typicode.com/users/{given_id}"
+    tasks_url = f"https://jsonplaceholder.typicode.com/todos?userId={given_id}"
 
-    # Create a CSV file with employee_id as the filename
-    csv_filename = f"{employee_id}.csv"
+    employee_response = requests.get(employee_url)
+    tasks_response = requests.get(tasks_url)
+
+    # Check if both GET requests were successful
+    if employee_response.status_code != 200 or tasks_response.status_code != 200:
+        print("One or more GET requests failed")
+        return
+
+    # Parse the JSON data
+    employee_data = employee_response.json()
+    tasks_data = tasks_response.json()
+
+    # Get the employee's username
+    username = employee_data.get("username")
+
+    # Create the CSV file with the employee's ID as the filename
+    csv_filename = f"{given_id}.csv"
     with open(csv_filename, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
+        csv_writer = csv.writer(file, quoting=csv.QUOTE_ALL)
 
         # Write the CSV header
-        writer.writerow(
-            ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
-        )
+        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
-        # Write the task details for each task
-        for task in todos_data:
-            task_completed = task['completed']
-            task_title = task['title']
-            writer.writerow([employee_id, employee_name,
-                             task_completed, task_title])
+        # Write each task's details to the CSV file
+        for task in tasks_data:
+            task_completed = task["completed"]
+            task_title = task["title"]
+            csv_writer.writerow([given_id, username, task_completed, task_title])
 
-    print(
-        f"Data exported to {csv_filename}"
-    )
+    print(f"Data exported to {csv_filename}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 1-export_to_CSV.py <employee_id>")
-        sys.exit(1)
-
-    try:
-        employee_id = int(sys.argv[1])
-    except ValueError:
-        print("Error: Employee ID must be an integer.")
-        sys.exit(1)
-
-    get_todo_data(employee_id)
+    process_request()
