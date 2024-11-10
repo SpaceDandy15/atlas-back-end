@@ -26,11 +26,19 @@ def get_todo_data(employee_id):
 
     # Fetch employee data
     user_response = requests.get(user_url)
+    if user_response.status_code != 200:
+        print("Failed to retrieve employee data.")
+        return
+
     user_data = user_response.json()
     employee_name = user_data.get('name')
 
     # Fetch TODO tasks data
     todos_response = requests.get(todos_url)
+    if todos_response.status_code != 200:
+        print("Failed to retrieve TODO tasks.")
+        return
+
     todos_data = todos_response.json()
 
     # Create a dictionary to store the tasks
@@ -43,7 +51,7 @@ def get_todo_data(employee_id):
         }
         tasks.append(task_info)
 
-    # Create the final structure with employee_id as the key
+    # Create the final structure with employee_id as the key (string format)
     data = {str(employee_id): tasks}
 
     # Create a JSON file with employee_id as the filename
@@ -51,9 +59,22 @@ def get_todo_data(employee_id):
     with open(json_filename, mode='w', encoding='utf-8') as file:
         json.dump(data, file)
 
+    # Close the requests explicitly
+    user_response.close()
+    todos_response.close()
+
     print(f"Data exported to {json_filename}.")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 2-export_to_JSON.py <employee_id>")
+        sys.exit(1)
+
+    try:
+        employee_id = int(sys.argv[1])
+    except ValueError:
+        print("Invalid employee ID provided.")
+        sys.exit(1)
+
+    get_todo_data(employee_id)
