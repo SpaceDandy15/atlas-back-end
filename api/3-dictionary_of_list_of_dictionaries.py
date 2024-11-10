@@ -52,7 +52,7 @@ def format_data(users_data, todos_data):
         todos_data (list): List of task data.
 
     Returns:
-        dict: A dictionary where each key is a user ID, and each value is a list of task dictionaries.
+        dict: A dict where each key is a user ID, each value is a list of task
     """
     user_tasks = {}
 
@@ -62,7 +62,8 @@ def format_data(users_data, todos_data):
         task_data = {
             "task": task['title'],
             "completed": task['completed'],
-            "username": next(user['username'] for user in users_data if user['id'] == task['userId'])
+            "username": next(user['username'] for user in users_data
+                             if user['id'] == task['userId'])
         }
 
         if user_id not in user_tasks:
@@ -79,7 +80,7 @@ def save_to_json(data, filename="todo_all_employees.json"):
 
     Args:
         data (dict): The formatted task data to save.
-        filename (str): The name of the output file. Default is "todo_all_employees.json".
+        filename (str): Default is "todo_all_employees.json".
     """
     with open(filename, "w") as json_file:
         json.dump(data, json_file)
@@ -90,7 +91,7 @@ def main():
     Main function to fetch, format, and save the data.
     """
     users_data, todos_data = fetch_data()  # Fetch employee and task data
-    formatted_data = format_data(users_data, todos_data)  # Format the data by user
+    formatted_data = format_data(users_data, todos_data)  # Format
     save_to_json(formatted_data)  # Save the formatted data to a JSON file
 
 
