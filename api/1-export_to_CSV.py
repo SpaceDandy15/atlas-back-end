@@ -3,7 +3,7 @@
 This script retrieves and exports the TODO list progress for a given employee
 using the JSONPlaceholder REST API into a CSV file.
 
-It takes the employee ID as input and creates a CSV file in the following format:
+Takes the employee ID as input and creates a CSV file in the following format:
 
 "USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"
 
@@ -47,17 +47,18 @@ def get_todo_data(employee_id):
     csv_filename = f"{employee_id}.csv"
     with open(csv_filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        
+
         # Write the CSV header
         writer.writerow(
             ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
         )
-        
+
         # Write the task details for each task
         for task in todos_data:
             task_completed = task['completed']
             task_title = task['title']
-            writer.writerow([employee_id, employee_name, task_completed, task_title])
+            writer.writerow([employee_id, employee_name,
+                             task_completed, task_title])
 
     print(f"Data exported to {csv_filename}")
 
