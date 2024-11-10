@@ -1,54 +1,68 @@
 #!/usr/bin/python3
-"""
-This module fetches tasks from a public API (JSONPlaceholder),
-formats them by user, and saves the formatted data into a JSON file.
+'''
+A Python script that interfaces with an API to fetch all employees and
+their todo tasks, formats the found data, and writes it into a `.json` file.
 
-Functions:
-    fetch_data: Fetches task data from the API.
-    format_data: Formats task data into a user-centered dictionary.
-    save_to_json: Saves formatted task data into a JSON file.
-    main: Orchestrates the flow of fetching, formatting, and saving task data.
-"""
+- Output filename: `todo_all_employees.json`
+- Format per user (with collapsed whitespace):
+    { "USER_ID": [
+        {
+        "task": "TASK_TITLE",
+        "completed": "TASK_COMPLETED_STATUS",
+        "username": "USERNAME"
+        }, {
+        "task": "TASK_TITLE",
+        "completed": "TASK_COMPLETED_STATUS",
+        "username": "USERNAME"
+        }, ...
+    ]}
+'''
 
 import json
 import requests
-import sys
 
 
-def fetch_data(employee_id):
+def fetch_data():
     """
-    Fetch task data from the JSONPlaceholder API.
-
-    Args:
-        employee_id (int): ID of the employee whose tasks are to be fetched.
+    Fetch all employees and their tasks from the API.
 
     Returns:
-        list: A list of dictionaries representing tasks.
+        list: A list of dictionaries, each containing task data.
     """
-    # URL to fetch task data
-    url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
-    response = requests.get(url)
-    return response.json()
+    users_url = "https://jsonplaceholder.typicode.com/users"
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
+
+    # Fetch employee data
+    users_response = requests.get(users_url)
+    users_data = users_response.json()
+
+    # Fetch task data
+    todos_response = requests.get(todos_url)
+    todos_data = todos_response.json()
+
+    return users_data, todos_data
 
 
-def format_data(tasks):
+def format_data(users_data, todos_data):
     """
-    Format task data into a dictionary by user ID.
+    Format the fetched data into a dictionary of tasks by user ID.
 
     Args:
-        tasks (list): List of task dictionaries.
+        users_data (list): List of employee data (user details).
+        todos_data (list): List of task data.
 
     Returns:
-        dict: Each key is a user ID, and value is a list of task dictionaries.
+        dict: A dictionary where each key is a user ID, and each value is a list of task dictionaries.
     """
     user_tasks = {}
 
-    for task in tasks:
-        user_id = str(task["userId"])
+    # Iterate through all tasks and group them by user ID
+    for task in todos_data:
+        user_id = str(task['userId'])  # Convert user ID to string
         task_data = {
-            "username": task["username"],
-            "task": task["title"],
-            "completed": task["completed"]
+            "task": task['title'],
+            "completed": task['completed'],
+            "username": next(user['username'] for user in users_data if user['id'] == task['userId'])
         }
 
         if user_id not in user_tasks:
@@ -61,40 +75,23 @@ def format_data(tasks):
 
 def save_to_json(data, filename="todo_all_employees.json"):
     """
-    Save formatted task data to a JSON file.
+    Save the formatted task data into a JSON file.
 
     Args:
-        data (dict): Formatted task data.
-        filename (str): The file name to save the data to.
+        data (dict): The formatted task data to save.
+        filename (str): The name of the output file. Default is "todo_all_employees.json".
     """
     with open(filename, "w") as json_file:
         json.dump(data, json_file)
 
 
-def process_request(employee_id):
-    """
-    Process request by fetching, formatting,saving task data for a given ID.
-    """
-    tasks = fetch_data(employee_id)
-    formatted_data = format_data(tasks)
-    save_to_json(formatted_data)
-
-
 def main():
     """
-    Main function to orchestrate fetching, formatting, and saving task data.
+    Main function to fetch, format, and save the data.
     """
-    if len(sys.argv) != 2:
-        print("No employee ID provided, using ID 1 as default.")
-        employee_id = 1  # Use a default employee ID if no argument is provided
-    else:
-        try:
-            employee_id = int(sys.argv[1])
-        except ValueError:
-            print("Error: Invalid employee ID provided.")
-            return
-
-    process_request(employee_id)
+    users_data, todos_data = fetch_data()  # Fetch employee and task data
+    formatted_data = format_data(users_data, todos_data)  # Format the data by user
+    save_to_json(formatted_data)  # Save the formatted data to a JSON file
 
 
 if __name__ == "__main__":
