@@ -13,6 +13,7 @@ Functions:
 import json
 import requests
 
+
 def fetch_data():
     """
     Fetch task data from the JSONPlaceholder API.
@@ -24,6 +25,7 @@ def fetch_data():
     response = requests.get(url)
     return response.json()
 
+
 def format_data(tasks):
     """
     Format task data into a dictionary by user ID.
@@ -32,7 +34,7 @@ def format_data(tasks):
         tasks (list): List of task dictionaries.
 
     Returns:
-        dict: Dictionary where each key is a user ID, and the value is a list of task dictionaries.
+        dict: each key is a user ID, and value is a list of task dictionaries.
     """
     user_tasks = {}
 
@@ -51,16 +53,18 @@ def format_data(tasks):
 
     return user_tasks
 
+
 def save_to_json(data, filename="todo_all_employees.json"):
     """
     Save formatted task data to a JSON file.
 
     Args:
         data (dict): Formatted task data.
-        filename (str): The file name to save the data to. Defaults to 'todo_all_employees.json'.
+        filename (str): The file name to save the data to
     """
     with open(filename, "w") as json_file:
         json.dump(data, json_file)
+
 
 def main():
     """
@@ -69,6 +73,7 @@ def main():
     tasks = fetch_data()
     formatted_data = format_data(tasks)
     save_to_json(formatted_data)
+
 
 if __name__ == "__main__":
     main()
