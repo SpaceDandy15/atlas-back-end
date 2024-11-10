@@ -23,11 +23,16 @@ import requests
 import sys
 import csv
 
+
 def get_todo_data(employee_id):
     """Fetch and export employee TODO list progress to CSV."""
     # URLs to fetch employee and TODO data
-    user_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
-    todos_url = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
+    user_url = (
+        f'https://jsonplaceholder.typicode.com/users/{employee_id}'
+    )
+    todos_url = (
+        f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
+    )
 
     # Fetch employee data
     user_response = requests.get(user_url)
@@ -44,7 +49,9 @@ def get_todo_data(employee_id):
         writer = csv.writer(file)
         
         # Write the CSV header
-        writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+        writer.writerow(
+            ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
+        )
         
         # Write the task details for each task
         for task in todos_data:
@@ -54,11 +61,12 @@ def get_todo_data(employee_id):
 
     print(f"Data exported to {csv_filename}")
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 1-export_to_CSV.py <employee_id>")
         sys.exit(1)
-    
+
     try:
         employee_id = int(sys.argv[1])
     except ValueError:
