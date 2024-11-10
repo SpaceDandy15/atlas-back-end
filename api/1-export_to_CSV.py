@@ -19,9 +19,9 @@ Example:
     python3 1-export_to_CSV.py 2
 """
 
+import csv
 import requests
 import sys
-import csv
 
 
 def get_todo_data(employee_id):
