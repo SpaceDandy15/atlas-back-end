@@ -42,12 +42,13 @@ def process_request():
     tasks_url = (
         f"https://jsonplaceholder.typicode.com/todos?userId={given_id}"
     )
-    
+
     employee_response = requests.get(employee_url)
     tasks_response = requests.get(tasks_url)
 
     # Check if both GET requests were successful
-    if employee_response.status_code != 200 or tasks_response.status_code != 200:
+    if (employee_response.status_code != 200 or
+            tasks_response.status_code != 200):
         print("One or more GET requests failed")
         return
 
@@ -64,13 +65,15 @@ def process_request():
         csv_writer = csv.writer(file, quoting=csv.QUOTE_ALL)
 
         # Write the CSV header
-        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+        csv_writer.writerow(["USER_ID", "USERNAME",
+                             "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
         # Write each task's details to the CSV file
         for task in tasks_data:
             task_completed = task["completed"]
             task_title = task["title"]
-            csv_writer.writerow([given_id, username, task_completed, task_title])
+            csv_writer.writerow([given_id, username,
+                                 task_completed, task_title])
 
     print(
         f"Data exported to {csv_filename}"
