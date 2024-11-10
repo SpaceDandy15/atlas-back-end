@@ -36,9 +36,13 @@ def process_request():
         return
 
     # Fetch employee data using the API
-    employee_url = f"https://jsonplaceholder.typicode.com/users/{given_id}"
-    tasks_url = f"https://jsonplaceholder.typicode.com/todos?userId={given_id}"
-
+    employee_url = (
+        f"https://jsonplaceholder.typicode.com/users/{given_id}"
+    )
+    tasks_url = (
+        f"https://jsonplaceholder.typicode.com/todos?userId={given_id}"
+    )
+    
     employee_response = requests.get(employee_url)
     tasks_response = requests.get(tasks_url)
 
@@ -68,7 +72,9 @@ def process_request():
             task_title = task["title"]
             csv_writer.writerow([given_id, username, task_completed, task_title])
 
-    print(f"Data exported to {csv_filename}")
+    print(
+        f"Data exported to {csv_filename}"
+    )
 
 
 if __name__ == "__main__":
