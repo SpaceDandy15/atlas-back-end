@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-This script retrieves and displays the TODO list progress for a given employee 
+This script retrieves and displays the TODO list progress for a given employee
 using the JSONPlaceholder REST API.
 
 It takes the employee ID as input and returns the following:
@@ -13,13 +13,14 @@ Usage:
     python3 0-gather_data_from_an_API.py <employee_id>
 
 Arguments:
-    employee_id (int): The ID of the employee whose TODO list you want to check.
+    employee_id (int): ID of Employee whose TODO list you want to check
 
 Example:
     python3 0-gather_data_from_an_API.py 1
 """
 import requests
 import sys
+
 
 def get_todo_progress(employee_id):
     """Fetch and display employee TODO list progress."""
@@ -37,7 +38,8 @@ def get_todo_progress(employee_id):
 
     # Calculate total tasks and completed tasks
     total_tasks = len(todos_data)
-    completed_tasks = [task['title'] for task in todos_data if task['completed']]
+    completed_tasks = [
+        task['title'] for task in todos_data if task['completed']]
 
     # Output the progress
     print(f"Employee {employee_name} is done with tasks({len(completed_tasks)}/{total_tasks}):")
