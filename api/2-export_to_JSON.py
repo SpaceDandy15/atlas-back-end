@@ -8,18 +8,6 @@ Usage:
 
 Arguments:
     employee_id (int): ID of Employee whose TODO list you want to export
-
-Example:
-    python3 2-export_to_JSON.py 2
-
-    The resulting file will be in the format:
-
-    {
-        "USER_ID": [
-            {"task": "TASK_TITLE", "completed": TASK_COMPLETED_STATUS, "username": "USERNAME"},
-            ...
-        ]
-    }
 """
 import json
 import requests
@@ -69,4 +57,3 @@ def get_todo_data(employee_id):
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 2-export_to_JSON.py <employee_id>")
-    
