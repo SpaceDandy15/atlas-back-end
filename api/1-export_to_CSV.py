@@ -27,21 +27,35 @@ import sys
 def get_todo_data(employee_id):
     """Fetch and export employee TODO list progress to CSV."""
     # URLs to fetch employee and TODO data
-    user_url = (
-        f'https://jsonplaceholder.typicode.com/users/{employee_id}'
-    )
-    todos_url = (
-        f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
-    )
+    user_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
+    todos_url = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
 
     # Fetch employee data
     user_response = requests.get(user_url)
+
+    if user_response.status_code != 200:
+        print(f"Error: Unable to fetch user data for employee ID {employee_id}")
+        sys.exit(1)
+
     user_data = user_response.json()
     employee_name = user_data.get('name')
 
+    if not employee_name:
+        print(f"Error: No employee found with ID {employee_id}")
+        sys.exit(1)
+
     # Fetch TODO tasks data
     todos_response = requests.get(todos_url)
+
+    if todos_response.status_code != 200:
+        print(f"Error: Unable to fetch tasks for employee ID {employee_id}")
+        sys.exit(1)
+
     todos_data = todos_response.json()
+
+    if not todos_data:
+        print(f"Error: No tasks found for employee ID {employee_id}")
+        sys.exit(1)
 
     # Create a CSV file with employee_id as the filename
     csv_filename = f"{employee_id}.csv"
@@ -57,8 +71,7 @@ def get_todo_data(employee_id):
         for task in todos_data:
             task_completed = task['completed']
             task_title = task['title']
-            writer.writerow([employee_id, employee_name,
-                             task_completed, task_title])
+            writer.writerow([employee_id, employee_name, task_completed, task_title])
 
     print(f"Data exported to {csv_filename}")
 
